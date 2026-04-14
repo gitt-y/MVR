@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+
+  --color-mvr-red: #E31E24;
+  --color-mvr-orange: #F7941D;
+  --color-mvr-yellow: #FFF200;
+  --color-mvr-green: #00A651;
+  --color-mvr-blue: #0072BC;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-slate-900 antialiased overflow-x-hidden;
+  }
+}
+
+.mvr-gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-mvr-red via-mvr-orange to-mvr-blue;
+}
+
+.mvr-gradient-bg {
+  @apply bg-gradient-to-br from-mvr-red via-mvr-orange to-mvr-blue;
+}
+
+.mvr-gradient-border {
+  position: relative;
+  background: white;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+.mvr-gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(to right, var(--color-mvr-red), var(--color-mvr-orange), var(--color-mvr-yellow), var(--color-mvr-green), var(--color-mvr-blue));
+}
