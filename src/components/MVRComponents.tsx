@@ -1,6 +1,9 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { PartyPopper, Calendar, Music, Users, ArrowRight, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const revealViewport = { once: true, margin: '-10% 0px -10% 0px' };
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
   <div className={`relative ${className} flex items-center justify-center`}>
@@ -71,29 +74,32 @@ const Navbar = () => {
 };
 
 const Hero = () => {
+  const prefersReducedMotion = useReducedMotion();
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const heroDriftY = useTransform(scrollY, [0, 600], [0, 120]);
+  const heroFade = useTransform(scrollY, [0, 260], [1, 0.2]);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 -z-10">
         <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
+          animate={prefersReducedMotion ? undefined : {
+            scale: [1, 1.08, 1],
+            x: [0, 18, 0],
+            y: [0, -12, 0],
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-mvr-red/10 blur-[120px] rounded-full"
+          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-mvr-red/10 blur-[96px] will-change-transform"
         />
         <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, -90, 0],
+          animate={prefersReducedMotion ? undefined : {
+            scale: [1, 1.1, 1],
+            x: [0, -20, 0],
+            y: [0, 14, 0],
           }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-mvr-blue/10 blur-[120px] rounded-full"
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-[-10%] right-[-10%] h-[60%] w-[60%] rounded-full bg-mvr-blue/10 blur-[104px] will-change-transform"
         />
       </div>
 
@@ -101,7 +107,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.9, ease: smoothEase }}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-600 font-semibold text-sm mb-8"
         >
           <Sparkles className="w-4 h-4 text-mvr-orange" />
@@ -111,7 +117,7 @@ const Hero = () => {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 1.05, delay: 0.12, ease: smoothEase }}
           className="font-display text-6xl md:text-8xl font-extrabold tracking-tight mb-8 leading-[0.9]"
         >
           Crafting <span className="mvr-gradient-text">Unforgettable</span> <br />
@@ -121,7 +127,7 @@ const Hero = () => {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.95, delay: 0.24, ease: smoothEase }}
           className="max-w-2xl mx-auto text-lg md:text-xl text-slate-600 mb-12 leading-relaxed"
         >
           MVR Hospitality Services brings your vision to life with vibrant energy, 
@@ -131,7 +137,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.95, delay: 0.38, ease: smoothEase }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <button className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-mvr-orange transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 group">
@@ -145,15 +151,29 @@ const Hero = () => {
       </div>
 
       {/* Floating Icons */}
-      <motion.div style={{ y: y1, opacity }} className="absolute top-1/4 left-10 hidden lg:block">
-        <div className="p-4 bg-white rounded-2xl shadow-2xl rotate-[-12deg] border border-slate-100">
+      <motion.div
+        style={{ y: heroDriftY, opacity: heroFade }}
+        className="absolute top-1/4 left-10 hidden lg:block will-change-transform"
+      >
+        <motion.div
+          animate={prefersReducedMotion ? undefined : { y: [0, -10, 0] }}
+          transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="p-4 bg-white rounded-2xl shadow-2xl rotate-[-12deg] border border-slate-100 will-change-transform"
+        >
           <PartyPopper className="w-8 h-8 text-mvr-red" />
-        </div>
+        </motion.div>
       </motion.div>
-      <motion.div style={{ y: y1, opacity }} className="absolute bottom-1/4 right-10 hidden lg:block">
-        <div className="p-4 bg-white rounded-2xl shadow-2xl rotate-[12deg] border border-slate-100">
+      <motion.div
+        style={{ y: heroDriftY, opacity: heroFade }}
+        className="absolute bottom-1/4 right-10 hidden lg:block will-change-transform"
+      >
+        <motion.div
+          animate={prefersReducedMotion ? undefined : { y: [0, 10, 0] }}
+          transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+          className="p-4 bg-white rounded-2xl shadow-2xl rotate-[12deg] border border-slate-100 will-change-transform"
+        >
           <Music className="w-8 h-8 text-mvr-blue" />
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   );
@@ -170,14 +190,14 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ icon: Icon, title, description, colorClass, delay }: ServiceCardProps) => (
   <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay }}
-    whileHover={{ y: -10 }}
-    className="p-8 rounded-3xl bg-white border border-slate-100 shadow-xl hover:shadow-2xl transition-all group"
+    initial={{ opacity: 0, y: 36, scale: 0.98 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    viewport={revealViewport}
+    transition={{ duration: 0.8, delay, ease: smoothEase }}
+    whileHover={{ y: -8, transition: { duration: 0.35, ease: smoothEase } }}
+    className="group rounded-3xl border border-slate-100 bg-white p-8 shadow-xl transition-[box-shadow,border-color] duration-500 hover:border-slate-200 hover:shadow-2xl will-change-transform"
   >
-    <div className={`w-14 h-14 rounded-2xl ${colorClass} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform`}>
+    <div className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${colorClass} text-white transition-transform duration-500 group-hover:scale-105`}>
       <Icon className="w-7 h-7" />
     </div>
     <h3 className="font-display text-2xl font-bold mb-4">{title}</h3>
@@ -220,7 +240,8 @@ const Services = () => {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={revealViewport}
+            transition={{ duration: 0.85, ease: smoothEase }}
             className="font-display text-4xl md:text-5xl font-bold mb-4"
           >
             Our <span className="mvr-gradient-text">Specialized</span> Services
@@ -230,11 +251,17 @@ const Services = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={revealViewport}
+          transition={{ duration: 0.9, ease: smoothEase }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+        >
           {services.map((service, index) => (
             <ServiceCard key={index} {...service} delay={index * 0.1} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
